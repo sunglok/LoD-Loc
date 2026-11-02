@@ -13,7 +13,7 @@ from omegaconf import OmegaConf, DictConfig
 from .. import logger, DATASETS_PATH
 from ..conf import data as conf_data_dir
 from ..data import DEMODataModule
-from .run import evaluate
+from .run import evaluate_demo
 
 data_dir =  DATASETS_PATH / "DEMO"
 
@@ -46,19 +46,10 @@ def run(
     default = OmegaConf.merge(default, dict(model_overrides))
     cfg = OmegaConf.merge(default, cfg)
     dataset = DEMODataModule(cfg.get("data", {}))
-    metrics = evaluate(experiment, cfg, dataset, split, multstage=multstage, **kwargs)
-
-    keys = [
-        "xyz_error",
-        "yaw_error",
-    ]
-    for k in keys:
-        if k not in metrics:
-            logger.warning("Key %s not in metrics.", k)
-            continue
-        rec = metrics[k].recall(thresholds).double().numpy().round(2).tolist()
-        logger.info("Recall %s: %s at %s m/°", k, rec, thresholds)
-    return metrics
+    save = evaluate_demo(
+        experiment, cfg, dataset, split, multstage=multstage, **kwargs
+    )
+    return save
 
 
 if __name__ == "__main__":

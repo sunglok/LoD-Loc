@@ -241,7 +241,6 @@ class DEMODataModule(pl.LightningDataModule):
             self.GPSpose_dirs,
             self.intrin_dirs,
             self.points3D_dirs,
-            self.mask_dirs,
             self.interval,
             image_ext=".JPG",
             points3D_ext=".npy",
